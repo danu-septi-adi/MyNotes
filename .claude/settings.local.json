@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(node --version)",
+      "PowerShell(npm --version)",
+      "Bash(Get-ChildItem -Path mynotes/android/app/)",
+      "Bash(npx react-native *)",
+      "Bash(./gradlew.bat --version)",
+      "Bash(./gradlew.bat app:installDebug -PreactNativeDevServerPort=8081)",
+      "PowerShell(cd c:\\\\project\\\\Mynotes\\\\mynotes; $env:PATH += \";c:\\\\project\\\\Mynotes\\\\mynotes\\\\android;C:\\\\Windows\\\\System32\"; npx react-native run-android)",
+      "Bash([ -f \"node_modules/$pkg/android/build.gradle\" ])",
+      "Bash(node -e \"console.log\\(require\\('react-native-safe-area-context/package.json'\\).version\\)\")",
+      "Bash(node -e \"console.log\\(require\\('react-native-screens/package.json'\\).version\\)\")",
+      "Bash(node -e \"console.log\\(require\\('react-native-biometrics/package.json'\\).version\\)\")",
+      "Bash(node -e \"console.log\\(require\\('react-native-fs/package.json'\\).version\\)\")",
+      "Bash(node -e \"console.log\\(require\\('react-native-share/package.json'\\).version\\)\")",
+      "Bash(node -e \"console.log\\(require\\('react-native-sqlite-storage/package.json'\\).version\\)\")",
+      "Bash(node -e \"console.log\\(require\\('@react-native/gradle-plugin/package.json'\\).version\\)\")",
+      "PowerShell(adb devices)",
+      "PowerShell(adb -s 1123537419000734 shell getprop ro.build.version.sdk)",
+      "PowerShell(adb -s 1123537419000734 shell getprop ro.product.cpu.abi)",
+      "PowerShell(adb -s 1123537419000734 shell getprop ro.build.version.release)",
+      "Bash(Get-ChildItem -Path \"c:\\\\project\\\\Mynotes\\\\docs\")"
+    ]
+  }
+}
