@@ -24,8 +24,8 @@ const sections = [
   {
     title: 'Lainnya',
     items: [
-      { icon: 'file-export-outline', label: 'Export/Import Data', route: '/data', color: '#6B7280' },
-      { icon: 'file-import-outline', label: 'Import Data', route: null, color: '#6B7280' },
+      { icon: 'lock-outline', label: 'Credential Manager', route: '/credential-categories' as const, color: '#8B5CF6' },
+      { icon: 'file-export-outline', label: 'Export/Import Data', route: '/data' as const, color: '#6B7280' },
       { icon: 'cog-outline', label: 'Pengaturan', route: '/settings' as const, color: '#6B7280' },
     ],
   },

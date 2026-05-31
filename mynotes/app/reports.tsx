@@ -155,11 +155,11 @@ export default function ReportsScreen() {
       <View style={{ flexDirection: 'row', gap: Spacing.md, paddingHorizontal: Spacing.lg, marginBottom: Spacing.lg }}>
         <View style={{ flex: 1, padding: Spacing.lg, borderRadius: BorderRadius.lg, backgroundColor: c.successBg }}>
           <Text style={{ fontSize: 11, color: c.textMuted, marginBottom: 4 }}>Pemasukan</Text>
-          <Text style={{ fontSize: 20, fontWeight: '700', color: c.success }} numberOfLines={1} adjustsFontSizeToFit>{fmt(summary.income)}</Text>
+          <Text style={{ fontSize: 20, fontWeight: '700', color: c.success }} numberOfLines={1} adjustsFontSizeToFit>{fmt(summary.income, 'IDR')}</Text>
         </View>
         <View style={{ flex: 1, padding: Spacing.lg, borderRadius: BorderRadius.lg, backgroundColor: c.errorBg }}>
           <Text style={{ fontSize: 11, color: c.textMuted, marginBottom: 4 }}>Pengeluaran</Text>
-          <Text style={{ fontSize: 20, fontWeight: '700', color: c.error }} numberOfLines={1} adjustsFontSizeToFit>{fmt(summary.expense)}</Text>
+          <Text style={{ fontSize: 20, fontWeight: '700', color: c.error }} numberOfLines={1} adjustsFontSizeToFit>{fmt(summary.expense, 'IDR')}</Text>
         </View>
         <View style={{ flex: 1, padding: Spacing.lg, borderRadius: BorderRadius.lg, backgroundColor: c.infoBg }}>
           <Text style={{ fontSize: 11, color: c.textMuted, marginBottom: 4 }}>Transaksi</Text>
@@ -223,7 +223,7 @@ export default function ReportsScreen() {
                       <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: d.color }} />
                       <Text style={{ fontSize: 13, color: c.text }}>{d.name}</Text>
                     </View>
-                    <Text style={{ fontSize: 12, fontWeight: '600', color: c.text }} numberOfLines={1} adjustsFontSizeToFit>{fmt(d.amount)} ({d.pct}%)</Text>
+                    <Text style={{ fontSize: 12, fontWeight: '600', color: c.text }} numberOfLines={1} adjustsFontSizeToFit>{fmt(d.amount, 'IDR')} ({d.pct}%)</Text>
                   </View>
                 ))}
               </View>

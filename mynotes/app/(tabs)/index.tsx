@@ -108,19 +108,19 @@ export default function DashboardScreen() {
           <Text style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)' }}>Total Saldo</Text>
         </View>
         <Text style={{ fontSize: 32, fontWeight: '800', letterSpacing: -1, color: '#fff', marginBottom: Spacing.lg }} numberOfLines={1} adjustsFontSizeToFit>
-          {fmt(data.balance)}
+          {fmt(data.balance, 'IDR')}
         </Text>
         <View style={{ flexDirection: 'row', backgroundColor: 'rgba(0,0,0,0.12)', borderRadius: BorderRadius.md, padding: Spacing.md }}>
           <View style={{ flex: 1, alignItems: 'center', gap: 2 }}>
             <MaterialCommunityIcons name="arrow-up-circle" size={12} color="rgba(255,255,255,0.7)" />
             <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)' }}>Pemasukan</Text>
-            <Text style={{ fontSize: 13, fontWeight: '700', color: '#fff' }} numberOfLines={1} adjustsFontSizeToFit>{fmt(data.income)}</Text>
+            <Text style={{ fontSize: 13, fontWeight: '700', color: '#fff' }} numberOfLines={1} adjustsFontSizeToFit>{fmt(data.income, 'IDR')}</Text>
           </View>
           <View style={{ width: 1, backgroundColor: 'rgba(255,255,255,0.2)', marginHorizontal: Spacing.md }} />
           <View style={{ flex: 1, alignItems: 'center', gap: 2 }}>
             <MaterialCommunityIcons name="arrow-down-circle" size={12} color="rgba(255,255,255,0.7)" />
             <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)' }}>Pengeluaran</Text>
-            <Text style={{ fontSize: 13, fontWeight: '700', color: '#fff' }} numberOfLines={1} adjustsFontSizeToFit>{fmt(data.expense)}</Text>
+            <Text style={{ fontSize: 13, fontWeight: '700', color: '#fff' }} numberOfLines={1} adjustsFontSizeToFit>{fmt(data.expense, 'IDR')}</Text>
           </View>
         </View>
       </View>
@@ -149,7 +149,7 @@ export default function DashboardScreen() {
             </View>
             <Text style={{ fontSize: 18, fontWeight: '700', color: c.text, marginBottom: 2 }}>{data.activeDebts}</Text>
             <Text style={{ fontSize: 11, color: c.textMuted }}>Hutang/Piutang</Text>
-            {data.activeDebts > 0 && <Text style={{ fontSize: 12, fontWeight: '600', color: c.error, marginTop: 4 }} numberOfLines={1} adjustsFontSizeToFit>{fmt(data.debtTotal)}</Text>}
+            {data.activeDebts > 0 && <Text style={{ fontSize: 12, fontWeight: '600', color: c.error, marginTop: 4 }} numberOfLines={1} adjustsFontSizeToFit>{fmt(data.debtTotal, 'IDR')}</Text>}
           </TouchableOpacity>
         </View>
 
@@ -160,7 +160,7 @@ export default function DashboardScreen() {
             </View>
             <Text style={{ fontSize: 11, color: c.textMuted }}>Trading</Text>
             <Text style={{ fontSize: 18, fontWeight: '700', color: c.text, marginBottom: 2 }}>{data.totalTrades} trade</Text>
-            {data.totalTrades > 0 && <Text style={{ fontSize: 12, fontWeight: '600', color: data.tradePL >= 0 ? c.success : c.error }} numberOfLines={1} adjustsFontSizeToFit>{fmt(data.tradePL)}</Text>}
+            {data.totalTrades > 0 && <Text style={{ fontSize: 12, fontWeight: '600', color: data.tradePL >= 0 ? c.success : c.error }} numberOfLines={1} adjustsFontSizeToFit>{fmt(data.tradePL, 'IDR')}</Text>}
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => router.push('/investing')} style={{ flex: 1, padding: Spacing.lg, borderRadius: BorderRadius.lg, backgroundColor: c.surface }}>
@@ -168,7 +168,7 @@ export default function DashboardScreen() {
               <MaterialCommunityIcons name="chart-line" size={18} color={c.info} />
             </View>
             <Text style={{ fontSize: 11, color: c.textMuted }}>Investasi</Text>
-            <Text style={{ fontSize: 18, fontWeight: '700', color: c.text, marginBottom: 2 }} numberOfLines={1} adjustsFontSizeToFit>{fmt(data.totalInvested)}</Text>
+            <Text style={{ fontSize: 18, fontWeight: '700', color: c.text, marginBottom: 2 }} numberOfLines={1} adjustsFontSizeToFit>{fmt(data.totalInvested, 'IDR')}</Text>
             <Text style={{ fontSize: 11, color: c.textMuted }}>Total Invest</Text>
           </TouchableOpacity>
 
@@ -202,7 +202,7 @@ export default function DashboardScreen() {
           <View style={{ width: 1, height: 36, backgroundColor: c.surfaceBorder }} />
           <View style={{ flex: 1, alignItems: 'center' }}>
             <MaterialCommunityIcons name={data.todayExpense > 0 ? 'cash-minus' : 'check-circle'} size={24} color={data.todayExpense > 0 ? c.error : c.success} />
-            <Text style={{ fontSize: 11, color: c.textMuted, textAlign: 'center', marginTop: 4 }} numberOfLines={1} adjustsFontSizeToFit>{data.todayExpense > 0 ? fmt(data.todayExpense) : 'Tidak Ada'}</Text>
+            <Text style={{ fontSize: 11, color: c.textMuted, textAlign: 'center', marginTop: 4 }} numberOfLines={1} adjustsFontSizeToFit>{data.todayExpense > 0 ? fmt(data.todayExpense, 'IDR') : 'Tidak Ada'}</Text>
           </View>
         </View>
       </View>

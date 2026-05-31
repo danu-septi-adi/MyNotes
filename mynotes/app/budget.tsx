@@ -84,8 +84,8 @@ export default function BudgetScreen() {
                 <View style={[s.barFill, { width: `${pct}%`, backgroundColor: remaining < 0 ? c.error : remaining < item.amount * 0.2 ? c.warning : c.success }]} />
               </View>
               <View style={s.cardBottom}>
-                <Text style={[s.spentText, { color: c.text }]} numberOfLines={1} adjustsFontSizeToFit>{fmt(spent)} / {fmt(item.amount)}</Text>
-                <Text style={[s.remainText, { color: remaining < 0 ? c.error : c.textMuted }]} numberOfLines={1} adjustsFontSizeToFit>{remaining < 0 ? `Over ${fmt(Math.abs(remaining))}` : `Sisa ${fmt(remaining)}`}</Text>
+                <Text style={[s.spentText, { color: c.text }]} numberOfLines={1} adjustsFontSizeToFit>{fmt(spent, 'IDR')} / {fmt(item.amount, 'IDR')}</Text>
+                <Text style={[s.remainText, { color: remaining < 0 ? c.error : c.textMuted }]} numberOfLines={1} adjustsFontSizeToFit>{remaining < 0 ? `Over ${fmt(Math.abs(remaining), 'IDR')}` : `Sisa ${fmt(remaining, 'IDR')}`}</Text>
               </View>
             </TouchableOpacity>
           );

@@ -63,7 +63,39 @@ export function initDB() {
       current_price REAL, note TEXT, date TEXT NOT NULL,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
+    CREATE TABLE IF NOT EXISTS credential_categories (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL, description TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE TABLE IF NOT EXISTS credentials (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      category_id INTEGER NOT NULL, title TEXT NOT NULL, description TEXT,
+      fields TEXT NOT NULL DEFAULT '[]',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (category_id) REFERENCES credential_categories (id)
+    );
+    CREATE TABLE IF NOT EXISTS currency_rates (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      code TEXT NOT NULL UNIQUE, rate REAL NOT NULL,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
   `);
+
+  try { db.runSync(`ALTER TABLE transactions ADD COLUMN currency TEXT NOT NULL DEFAULT 'IDR'`); } catch (e) {}
+  try { db.runSync(`ALTER TABLE debts ADD COLUMN currency TEXT NOT NULL DEFAULT 'IDR'`); } catch (e) {}
+  try { db.runSync(`ALTER TABLE budgets ADD COLUMN currency TEXT NOT NULL DEFAULT 'IDR'`); } catch (e) {}
+  try { db.runSync(`ALTER TABLE wishlists ADD COLUMN currency TEXT NOT NULL DEFAULT 'IDR'`); } catch (e) {}
+  try { db.runSync(`ALTER TABLE tradings ADD COLUMN currency TEXT NOT NULL DEFAULT 'IDR'`); } catch (e) {}
+  try { db.runSync(`ALTER TABLE investings ADD COLUMN currency TEXT NOT NULL DEFAULT 'IDR'`); } catch (e) {}
+
+  const ratesExist = db.getAllSync('SELECT count(*) as c FROM currency_rates') as any[];
+  if (ratesExist[0]?.c === 0) {
+    const defaultRates: Record<string, number> = { USD: 1, IDR: 16500, EUR: 0.92, GBP: 0.79, SGD: 1.35, MYR: 4.68, JPY: 156.5, CNY: 7.24, KRW: 1370, SAR: 3.75, CHF: 0.90, AUD: 1.53, THB: 36.5 };
+    for (const [code, rate] of Object.entries(defaultRates)) {
+      db.runSync('INSERT OR REPLACE INTO currency_rates (code, rate, updated_at) VALUES (?, ?, datetime("now"))', [code, rate]);
+    }
+  }
 
   const cats = db.getAllSync('SELECT count(*) as c FROM categories') as any[];
   if (cats[0]?.c === 0) {

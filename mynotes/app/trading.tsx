@@ -51,7 +51,7 @@ export default function TradingScreen() {
       </View>
 
       <View style={[st.sumRow, { backgroundColor: c.surface }]}>
-        <View style={st.sumItem}><Text style={[st.sumLabel, { color: c.textMuted }]}>Total P/L</Text><Text style={[st.sumVal, { color: totalPL >= 0 ? c.success : c.error }]} numberOfLines={1} adjustsFontSizeToFit>{fmt(totalPL)}</Text></View>
+        <View style={st.sumItem}><Text style={[st.sumLabel, { color: c.textMuted }]}>Total P/L</Text><Text style={[st.sumVal, { color: totalPL >= 0 ? c.success : c.error }]} numberOfLines={1} adjustsFontSizeToFit>{fmt(totalPL, 'IDR')}</Text></View>
         <View style={[st.div, { backgroundColor: c.surfaceBorder }]} />
         <View style={st.sumItem}><Text style={[st.sumLabel, { color: c.textMuted }]}>Win Rate</Text><Text style={[st.sumVal, { color: c.success }]}>{totalTrades > 0 ? Math.round((winTrades / totalTrades) * 100) : 0}%</Text></View>
         <View style={[st.div, { backgroundColor: c.surfaceBorder }]} />
@@ -66,10 +66,10 @@ export default function TradingScreen() {
                 <Text style={[st.pair, { color: c.text }]}>{item.pair}</Text>
                 <Text style={[st.date, { color: c.textMuted }]}>{new Date(item.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</Text>
               </View>
-              <Text style={[st.pl, { color: (item.result || 0) >= 0 ? c.success : c.error }]} numberOfLines={1} adjustsFontSizeToFit>{item.result >= 0 ? '+' : ''}{fmt(item.result || 0)}</Text>
+              <Text style={[st.pl, { color: (item.result || 0) >= 0 ? c.success : c.error }]} numberOfLines={1} adjustsFontSizeToFit>{item.result >= 0 ? '+' : ''}{fmt(item.result || 0, 'IDR')}</Text>
             </View>
             <View style={st.detailRow}>
-              <Text style={[st.detail, { color: c.textMuted }]} numberOfLines={1} adjustsFontSizeToFit>Entry: {fmt(item.entry_price)} | Vol: {item.volume}</Text>
+              <Text style={[st.detail, { color: c.textMuted }]} numberOfLines={1} adjustsFontSizeToFit>Entry: {fmt(item.entry_price, 'IDR')} | Vol: {item.volume}</Text>
               {item.reason ? <Text style={[st.detail, { color: c.textMuted }]}>{item.reason}</Text> : null}
             </View>
             <TouchableOpacity onPress={() => del(item.id)} style={st.delBtn}><MaterialCommunityIcons name="trash-can-outline" size={18} color={c.textMuted} /></TouchableOpacity>

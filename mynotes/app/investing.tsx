@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 import { useState, useCallback } from 'react';
 import { router, useFocusEffect } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -12,7 +12,7 @@ import ModalForm from '../components/ModalForm';
 import DatePicker from '../components/DatePicker';
 import { fetchCryptoPrice, fetchGoldPrice, fetchStockPrice } from '../services/api';
 
-interface Invest { id: number; asset_name: string; asset_type: string; units: number; buy_price: number; total_invest: number; current_price: number | null; note: string; date: string; }
+interface Invest { id: number; asset_name: string; asset_type: string; units: number; buy_price: number; total_invest: number; current_price: number | null; note: string; date: string; currency: string; }
 
 export default function InvestingScreen() {
   const { colors } = useColors(); const { format: fmt, code } = useCurrency(); const c = colors;
@@ -24,6 +24,7 @@ export default function InvestingScreen() {
   const [error, setError] = useState('');
   const [updating, setUpdating] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [assetCurrency, setAssetCurrency] = useState('IDR');
 
   const load = useCallback(() => setItems(db.getAllSync('SELECT * FROM investings ORDER BY date DESC') as Invest[]), []);
   useFocusEffect(useCallback(() => { load(); }, []));
@@ -34,11 +35,11 @@ export default function InvestingScreen() {
     if (!units || !buyPrice) { setError('Units & buy price wajib'); return; }
     const total = totalInvest || (parseFloat(units) * parseFloat(buyPrice));
     if (editingId) {
-      db.runSync('UPDATE investings SET asset_name=?, asset_type=?, units=?, buy_price=?, total_invest=?, note=?, date=? WHERE id=?',
-        [assetName, assetType, parseFloat(units), parseFloat(buyPrice), parseFloat(total), note, date, editingId]);
+      db.runSync('UPDATE investings SET asset_name=?, asset_type=?, units=?, buy_price=?, total_invest=?, note=?, date=?, currency=? WHERE id=?',
+        [assetName, assetType, parseFloat(units), parseFloat(buyPrice), parseFloat(total), note, date, assetCurrency, editingId]);
     } else {
-      db.runSync('INSERT INTO investings (asset_name, asset_type, units, buy_price, total_invest, current_price, note, date) VALUES (?,?,?,?,?,?,?,?)',
-        [assetName, assetType, parseFloat(units), parseFloat(buyPrice), parseFloat(total), null, note, date]);
+      db.runSync('INSERT INTO investings (asset_name, asset_type, units, buy_price, total_invest, current_price, note, date, currency) VALUES (?,?,?,?,?,?,?,?,?)',
+        [assetName, assetType, parseFloat(units), parseFloat(buyPrice), parseFloat(total), null, note, date, assetCurrency]);
     }
     setModal(false); reset(); load();
   };
@@ -47,9 +48,10 @@ export default function InvestingScreen() {
     setEditingId(item.id); setAssetName(item.asset_name); setAssetType(item.asset_type);
     setUnits(String(item.units)); setBuyPrice(String(item.buy_price));
     setTotalInvest(String(item.total_invest)); setNote(item.note || ''); setDate(item.date);
+    setAssetCurrency(item.currency || 'IDR');
     setModal(true);
   };
-  const reset = () => { setEditingId(null); setAssetName(''); setUnits(''); setBuyPrice(''); setTotalInvest(''); setNote(''); setDate(new Date().toISOString().split('T')[0]); setError(''); };
+  const reset = () => { setEditingId(null); setAssetName(''); setUnits(''); setBuyPrice(''); setTotalInvest(''); setNote(''); setDate(new Date().toISOString().split('T')[0]); setError(''); setAssetCurrency('IDR'); };
 
   const updatePrices = async () => {
     setUpdating(true);
@@ -75,7 +77,6 @@ export default function InvestingScreen() {
 
   const totalInvested = items.reduce((s, i) => s + i.total_invest, 0);
   const totalCurrent = items.reduce((s, i) => s + ((i.current_price || i.buy_price) * i.units), 0);
-  const pl = totalCurrent - totalInvested;
 
   const types = ['crypto', 'gold', 'stock', 'other'];
   const typeIcons: Record<string, string> = { crypto: 'bitcoin', gold: 'gold', stock: 'chart-line', other: 'dots-horizontal' };
@@ -89,11 +90,9 @@ export default function InvestingScreen() {
       </View>
 
       <View style={[st.sumRow, { backgroundColor: c.surface }]}>
-        <View style={st.sumItem}><Text style={[st.sumLabel, { color: c.textMuted }]}>Total</Text><Text style={[st.sumVal, { color: c.text }]} numberOfLines={1} adjustsFontSizeToFit>{fmt(totalInvested)}</Text></View>
+        <View style={st.sumItem}><Text style={[st.sumLabel, { color: c.textMuted }]}>Total</Text><Text style={[st.sumVal, { color: c.text }]} numberOfLines={1} adjustsFontSizeToFit>{fmt(totalInvested, 'IDR')}</Text></View>
         <View style={[st.div, { backgroundColor: c.surfaceBorder }]} />
-        <View style={st.sumItem}><Text style={[st.sumLabel, { color: c.textMuted }]}>Nilai Kini</Text><Text style={[st.sumVal, { color: c.text }]} numberOfLines={1} adjustsFontSizeToFit>{fmt(totalCurrent)}</Text></View>
-        <View style={[st.div, { backgroundColor: c.surfaceBorder }]} />
-        <View style={st.sumItem}><Text style={[st.sumLabel, { color: c.textMuted }]}>P/L</Text><Text style={[st.sumVal, { color: pl >= 0 ? c.success : c.error }]} numberOfLines={1} adjustsFontSizeToFit>{fmt(pl)}</Text></View>
+        <View style={st.sumItem}><Text style={[st.sumLabel, { color: c.textMuted }]}>Nilai Kini</Text><Text style={[st.sumVal, { color: c.text }]} numberOfLines={1} adjustsFontSizeToFit>{fmt(totalCurrent, 'IDR')}</Text></View>
       </View>
 
       <TouchableOpacity style={[st.updateBtn, { backgroundColor: c.primaryBg, borderColor: c.primary }]} onPress={updatePrices} disabled={updating}>
@@ -103,6 +102,7 @@ export default function InvestingScreen() {
 
       <FlatList data={items} keyExtractor={i => i.id.toString()} contentContainerStyle={st.list}
         renderItem={({ item }) => {
+          const cur = item.currency || 'IDR';
           const hasLive = item.current_price !== null && item.current_price !== undefined && item.current_price > 0;
           const currentVal = hasLive ? item.current_price! * item.units : item.total_invest;
           const profit = currentVal - item.total_invest;
@@ -122,16 +122,21 @@ export default function InvestingScreen() {
                 </View>
               </View>
               <View style={st.detailRow}>
-                <Text style={[st.detail, { color: c.textMuted }]} numberOfLines={1} adjustsFontSizeToFit>{item.units} unit @ {fmt(item.buy_price)}</Text>
-                <Text style={[st.plText, { color: profit >= 0 ? c.success : c.error }]} numberOfLines={1} adjustsFontSizeToFit>{profit >= 0 ? '+' : ''}{fmt(profit)}</Text>
+                <Text style={[st.detail, { color: c.textMuted }]} numberOfLines={1} adjustsFontSizeToFit>{item.units} unit @ {fmt(item.buy_price, cur)}</Text>
+                <Text style={[st.plText, { color: profit >= 0 ? c.success : c.error }]} numberOfLines={1} adjustsFontSizeToFit>{profit >= 0 ? '+' : ''}{fmt(profit, cur)}</Text>
               </View>
               {hasLive ? (
                 <View style={st.liveRow}>
                   <MaterialCommunityIcons name="chart-timeline-variant" size={14} color={c.info} />
-                  <Text style={{ fontSize: 12, color: c.info }}>{fmt(item.current_price!)} / unit</Text>
-                  <Text style={{ fontSize: 12, color: c.textMuted }}> • Nilai: {fmt(currentVal)}</Text>
+                  <Text style={{ fontSize: 12, color: c.info }}>{fmt(item.current_price!, cur)} / unit</Text>
+                  <Text style={{ fontSize: 12, color: c.textMuted }}> • Nilai: {fmt(currentVal, cur)}</Text>
                 </View>
               ) : null}
+              <View style={{ flexDirection: 'row', gap: 4, marginTop: 4 }}>
+                <View style={{ backgroundColor: c.gray100, paddingHorizontal: 6, borderRadius: 4, alignSelf: 'flex-start' }}>
+                  <Text style={{ fontSize: 10, color: c.textMuted }}>{cur}</Text>
+                </View>
+              </View>
               {item.note ? <Text style={[st.note, { color: c.textMuted }]}>{item.note}</Text> : null}
             </View>
           );
@@ -152,8 +157,19 @@ export default function InvestingScreen() {
           </View>
         </View>
         <Input label="Jumlah Unit" keyboardType="numeric" value={units} onChangeText={setUnits} placeholder="0" />
-        <Input label="Harga Beli per Unit (Rp)" keyboardType="numeric" value={buyPrice} onChangeText={setBuyPrice} placeholder="0" />
-        <Input label="Total Invest (Rp, opsional)" keyboardType="numeric" value={totalInvest} onChangeText={setTotalInvest} placeholder="Otomatis jika kosong" />
+        <Input label="Harga Beli per Unit" keyboardType="numeric" value={buyPrice} onChangeText={setBuyPrice} placeholder="0" />
+        <Input label="Total Invest (opsional)" keyboardType="numeric" value={totalInvest} onChangeText={setTotalInvest} placeholder="Otomatis jika kosong" />
+        <View style={{ paddingHorizontal: Spacing.lg, marginBottom: Spacing.md }}>
+          <Text style={{ fontSize: 13, fontWeight: '600', color: c.textSecondary, marginBottom: 6 }}>Mata Uang Aset</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {['IDR', 'USD', 'SGD', 'MYR', 'EUR', 'GBP'].map(cur => (
+              <TouchableOpacity key={cur} style={[st.chip, assetCurrency === cur && { backgroundColor: c.primaryBg, borderColor: c.primary }]}
+                onPress={() => setAssetCurrency(cur)}>
+                <Text style={[st.chipText, { color: assetCurrency === cur ? c.primary : c.textMuted }]}>{cur}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
         <Input label="Catatan" value={note} onChangeText={setNote} placeholder="Catatan..." />
         <DatePicker label="Tanggal" value={date} onChange={setDate} />
       </ModalForm>

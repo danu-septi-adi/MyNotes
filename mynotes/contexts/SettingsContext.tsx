@@ -5,24 +5,32 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 type ThemeMode = 'light' | 'dark' | 'system';
 
 interface Settings {
-  currency: string;
+  nativeCurrency: string;
+  displayCurrency: string;
   theme: ThemeMode;
   tabColor: string;
 }
 
 interface SettingsContextType {
   settings: Settings;
-  setCurrency: (code: string) => void;
+  setNativeCurrency: (code: string) => void;
+  setDisplayCurrency: (code: string) => void;
   setTheme: (mode: ThemeMode) => void;
   setTabColor: (color: string) => void;
   resolvedTheme: 'light' | 'dark';
 }
 
-const defaults: Settings = { currency: 'IDR', theme: 'system', tabColor: '#6366F1' };
+const defaults: Settings = {
+  nativeCurrency: 'IDR',
+  displayCurrency: 'USD',
+  theme: 'system',
+  tabColor: '#6366F1',
+};
 
 const SettingsContext = createContext<SettingsContextType>({
   settings: defaults,
-  setCurrency: () => {},
+  setNativeCurrency: () => {},
+  setDisplayCurrency: () => {},
   setTheme: () => {},
   setTabColor: () => {},
   resolvedTheme: 'light',
@@ -37,7 +45,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     AsyncStorage.getItem('@settings').then(str => {
       if (str) {
         const parsed = JSON.parse(str);
-        // ensure tabColor has default if not set
+        if (!parsed.nativeCurrency) parsed.nativeCurrency = defaults.nativeCurrency;
+        if (!parsed.displayCurrency) parsed.displayCurrency = defaults.displayCurrency;
         if (!parsed.tabColor) parsed.tabColor = defaults.tabColor;
         setSettings(parsed);
       }
@@ -50,7 +59,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     AsyncStorage.setItem('@settings', JSON.stringify(s));
   };
 
-  const setCurrency = (code: string) => save({ ...settings, currency: code });
+  const setNativeCurrency = (code: string) => save({ ...settings, nativeCurrency: code });
+  const setDisplayCurrency = (code: string) => save({ ...settings, displayCurrency: code });
   const setTheme = (theme: ThemeMode) => save({ ...settings, theme });
   const setTabColor = (tabColor: string) => save({ ...settings, tabColor });
 
@@ -60,7 +70,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   if (!loaded) return null;
 
   return (
-    <SettingsContext.Provider value={{ settings, setCurrency, setTheme, setTabColor, resolvedTheme }}>
+    <SettingsContext.Provider value={{ settings, setNativeCurrency, setDisplayCurrency, setTheme, setTabColor, resolvedTheme }}>
       {children}
     </SettingsContext.Provider>
   );

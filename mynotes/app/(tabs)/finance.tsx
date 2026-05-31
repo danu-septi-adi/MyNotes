@@ -5,13 +5,14 @@ import { useFocusEffect } from 'expo-router';
 import db from '../../database';
 import { useColors } from '../../hooks/useColors';
 import { useCurrency } from '../../hooks/useCurrency';
+import { currencies } from '../../constants/currencies';
 import { Spacing, BorderRadius, Typography } from '../../constants/theme';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import ModalForm from '../../components/ModalForm';
 import DatePicker from '../../components/DatePicker';
 
-interface Tx { id: number; amount: number; category_id: number; type: string; date: string; note: string; category_name?: string; color?: string; }
+interface Tx { id: number; amount: number; category_id: number; type: string; date: string; note: string; currency: string; category_name?: string; color?: string; }
 interface Cat { id: number; name: string; type: string; color: string; }
 
 export default function FinanceScreen() {
@@ -27,6 +28,7 @@ export default function FinanceScreen() {
   const [type, setType] = useState<'income' | 'expense'>('expense');
   const [note, setNote] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [txCurrency, setTxCurrency] = useState('IDR');
   const [error, setError] = useState('');
 
   const loadTxs = useCallback(() => {
@@ -44,7 +46,7 @@ export default function FinanceScreen() {
     const a = parseFloat(amount);
     if (!amount || isNaN(a) || a <= 0) { setError('Jumlah tidak valid'); return; }
     if (!selCat) { setError('Pilih kategori'); return; }
-    db.runSync('INSERT INTO transactions (amount, category_id, type, date, note) VALUES (?, ?, ?, ?, ?)', [a, selCat, type, date, note]);
+    db.runSync('INSERT INTO transactions (amount, category_id, type, date, note, currency) VALUES (?, ?, ?, ?, ?, ?)', [a, selCat, type, date, note, txCurrency]);
     setModal(false); setAmount(''); setNote(''); setSelCat(null); setError(''); loadTxs();
   };
 
@@ -67,11 +69,11 @@ export default function FinanceScreen() {
 
       <View style={st.summaryRow}>
         <View style={[st.summary, { backgroundColor: c.successBg }]}>
-          <Text style={[st.summaryVal, { color: c.success }]} numberOfLines={1} adjustsFontSizeToFit>{fmt(totalIncome)}</Text>
+          <Text style={[st.summaryVal, { color: c.success }]} numberOfLines={1} adjustsFontSizeToFit>{fmt(totalIncome, 'IDR')}</Text>
           <Text style={[st.summaryLabel, { color: c.textMuted }]}>Pemasukan</Text>
         </View>
         <View style={[st.summary, { backgroundColor: c.errorBg }]}>
-          <Text style={[st.summaryVal, { color: c.error }]} numberOfLines={1} adjustsFontSizeToFit>{fmt(totalExpense)}</Text>
+          <Text style={[st.summaryVal, { color: c.error }]} numberOfLines={1} adjustsFontSizeToFit>{fmt(totalExpense, 'IDR')}</Text>
           <Text style={[st.summaryLabel, { color: c.textMuted }]}>Pengeluaran</Text>
         </View>
       </View>
@@ -86,12 +88,17 @@ export default function FinanceScreen() {
               <View style={st.cardRow}>
                 <Text style={[st.cardCat, { color: c.text }]}>{item.category_name}</Text>
                 <Text style={[st.cardAmount, { color: item.type === 'income' ? c.success : c.error }]} numberOfLines={1} adjustsFontSizeToFit>
-                  {item.type === 'income' ? '+' : '-'}{fmt(item.amount)}
+                  {item.type === 'income' ? '+' : '-'}{fmt(item.amount, item.currency || 'IDR')}
                 </Text>
               </View>
               {item.note ? <Text style={[st.cardNote, { color: c.textMuted }]}>{item.note}</Text> : null}
               <View style={st.cardRow}>
-                <Text style={[st.cardDate, { color: c.textMuted }]}>{new Date(item.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</Text>
+                <View style={{ flexDirection: 'row', gap: 6 }}>
+                  <Text style={[st.cardDate, { color: c.textMuted }]}>{new Date(item.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</Text>
+                  <View style={{ backgroundColor: c.gray100, paddingHorizontal: 6, borderRadius: 4 }}>
+                    <Text style={{ fontSize: 10, color: c.textMuted }}>{item.currency || 'IDR'}</Text>
+                  </View>
+                </View>
                 <TouchableOpacity onPress={() => delTx(item.id)} style={st.delBtn}>
                   <MaterialCommunityIcons name="trash-can-outline" size={18} color={c.textMuted} />
                 </TouchableOpacity>
@@ -133,6 +140,15 @@ export default function FinanceScreen() {
           ))}
         </ScrollView>
         <Input label="Jumlah" icon="currency-usd" keyboardType="numeric" value={amount} onChangeText={setAmount} placeholder="0" error={error} />
+        <Text style={[st.label, { color: c.textSecondary }]}>Mata Uang</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: Spacing.md }}>
+          {currencies.slice(0, 8).map(cur => (
+            <TouchableOpacity key={cur.code} style={[st.chip, txCurrency === cur.code && { backgroundColor: c.primaryBg, borderColor: c.primary }]}
+              onPress={() => setTxCurrency(cur.code)}>
+              <Text style={[st.chipText, txCurrency === cur.code && { color: c.primary, fontWeight: '600' }]}>{cur.code}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
         <Input label="Catatan" value={note} onChangeText={setNote} placeholder="Tambahkan catatan..." />
         <DatePicker label="Tanggal" value={date} onChange={setDate} />
       </ModalForm>

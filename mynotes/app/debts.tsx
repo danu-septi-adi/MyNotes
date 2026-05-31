@@ -63,13 +63,13 @@ export default function DebtsScreen() {
         <View style={{ flex: 1, alignItems: 'center' }}>
           <MaterialCommunityIcons name="arrow-down-bold" size={14} color={c.error} />
           <Text style={{ fontSize: 11, color: c.textMuted, marginTop: 2 }}>Hutang</Text>
-          <Text style={{ fontSize: 18, fontWeight: '700', color: c.error }} numberOfLines={1} adjustsFontSizeToFit>{fmt(activeDebt)}</Text>
+          <Text style={{ fontSize: 18, fontWeight: '700', color: c.error }} numberOfLines={1} adjustsFontSizeToFit>{fmt(activeDebt, 'IDR')}</Text>
         </View>
         <View style={{ width: 1, height: 40, backgroundColor: c.surfaceBorder }} />
         <View style={{ flex: 1, alignItems: 'center' }}>
           <MaterialCommunityIcons name="arrow-up-bold" size={14} color={c.success} />
           <Text style={{ fontSize: 11, color: c.textMuted, marginTop: 2 }}>Piutang</Text>
-          <Text style={{ fontSize: 18, fontWeight: '700', color: c.success }} numberOfLines={1} adjustsFontSizeToFit>{fmt(activeReceivable)}</Text>
+          <Text style={{ fontSize: 18, fontWeight: '700', color: c.success }} numberOfLines={1} adjustsFontSizeToFit>{fmt(activeReceivable, 'IDR')}</Text>
         </View>
       </View>
 
@@ -108,7 +108,7 @@ export default function DebtsScreen() {
               </View>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                  <Text style={[st.cardAmount, { color }]} numberOfLines={1} adjustsFontSizeToFit>{fmt(item.amount)}</Text>
+                  <Text style={[st.cardAmount, { color }]} numberOfLines={1} adjustsFontSizeToFit>{fmt(item.amount, 'IDR')}</Text>
                   <View style={[st.typeBadge, { backgroundColor: color + '20' }]}>
                     <Text style={[st.typeBadgeText, { color }]}>{isDebt ? 'Hutang' : 'Piutang'}</Text>
                   </View>

@@ -42,8 +42,8 @@ export default function WishlistScreen() {
       </View>
 
       <View style={st.sumRow}>
-        <View style={[st.sumCard, { backgroundColor: c.primaryBg }]}><Text style={[st.sumVal, { color: c.primary }]} numberOfLines={1} adjustsFontSizeToFit>{fmt(totalWish)}</Text><Text style={[st.sumLabel, { color: c.textMuted }]}>Total Impian</Text></View>
-        <View style={[st.sumCard, { backgroundColor: c.successBg }]}><Text style={[st.sumVal, { color: c.success }]} numberOfLines={1} adjustsFontSizeToFit>{fmt(totalSaved)}</Text><Text style={[st.sumLabel, { color: c.textMuted }]}>Terkumpul</Text></View>
+        <View style={[st.sumCard, { backgroundColor: c.primaryBg }]}><Text style={[st.sumVal, { color: c.primary }]} numberOfLines={1} adjustsFontSizeToFit>{fmt(totalWish, 'IDR')}</Text><Text style={[st.sumLabel, { color: c.textMuted }]}>Total Impian</Text></View>
+        <View style={[st.sumCard, { backgroundColor: c.successBg }]}><Text style={[st.sumVal, { color: c.success }]} numberOfLines={1} adjustsFontSizeToFit>{fmt(totalSaved, 'IDR')}</Text><Text style={[st.sumLabel, { color: c.textMuted }]}>Terkumpul</Text></View>
       </View>
 
       <FlatList data={items} keyExtractor={i => i.id.toString()} contentContainerStyle={st.list}
@@ -59,7 +59,7 @@ export default function WishlistScreen() {
               </View>
               <TouchableOpacity onPress={() => del(item.id)} style={st.iconBtn}><MaterialCommunityIcons name="trash-can-outline" size={18} color={c.textMuted} /></TouchableOpacity>
             </View>
-            <View style={st.priceRow}><Text style={[st.priceLabel, { color: c.textMuted }]}>Target</Text><Text style={[st.priceVal, { color: c.text }]} numberOfLines={1} adjustsFontSizeToFit>{fmt(item.price)}</Text></View>
+            <View style={st.priceRow}><Text style={[st.priceLabel, { color: c.textMuted }]}>Target</Text><Text style={[st.priceVal, { color: c.text }]} numberOfLines={1} adjustsFontSizeToFit>{fmt(item.price, 'IDR')}</Text></View>
             {item.target_amount > 0 && <View style={[st.progBg, { backgroundColor: c.gray100 }]}><View style={[st.progFill, { width: `${Math.min((item.saved_amount / item.target_amount) * 100, 100)}%`, backgroundColor: c.primary }]} /></View>}
             <View style={[st.badge, { backgroundColor: pColor(item.priority) + '20' }]}><Text style={[st.badgeText, { color: pColor(item.priority) }]}>{pLabel(item.priority)}</Text></View>
           </View>)}
